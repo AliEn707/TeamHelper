@@ -11,6 +11,11 @@ import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.core.MouseEvent;
 import haxe.ui.macros.ComponentMacros;
+import lime.media.AudioBuffer;
+import openfl.media.Sound;
+import openfl.events.Event;
+
+import sys.io.File;
 
 class Main {
 	private static var _main:Null<Component>;
@@ -26,42 +31,21 @@ class Main {
             _main = ComponentMacros.buildComponent("assets/ui/init.xml");
 
             app.addComponent(_main);
-
-			cast(_main.findComponent("connect"), Button).onClick = function(e:MouseEvent){
-				trace(cast(_main.findComponent("host"), TextField).text);
-				trace(Std.parseInt(cast(_main.findComponent("port"), TextField).text));
-				(new TcpConnection()).connect(
-					cast(_main.findComponent("host"), TextField).text,
-					Std.parseInt(cast(_main.findComponent("port"), TextField).text),
-					function(conn:TcpConnection){
-						trace("connected");
-						_conn = conn;
-						_conn.sendShort(0);//send first 2 bytes to show that we are not flash
-						switchToConn();
-					},
-					function(e:Dynamic){
-						trace(e);
-					}
-				);
-			};
-			cast(_main.findComponent("server"),Button).onClick = function(e:MouseEvent){	
-				(new TcpConnection()).listen(
-					Std.parseInt(cast(_main.findComponent("port"), TextField).text),
-					function(conn:TcpConnection){
-						_conn = conn;
-						switchToConn();
-					},
-					function(conn:TcpConnection){
-						trace("started");
-						_main.removeComponent(_main.findComponent("server"));
-					},
-					function(e:Dynamic){
-						trace(e);
-					}
-				);
-			};
             app.start();
         });
+		
+		
+		var wav:Bytes = File.getBytes("assets/sample.wav");
+		var audio:AudioBuffer = AudioBuffer.fromBytes(wav);
+		trace(audio.bitsPerSample);
+		trace(audio.sampleRate);
+		var sound:Sound = Sound.fromAudioBuffer(audio);
+		sound.play(0, 0).addEventListener(Event.SOUND_COMPLETE, function(e:Dynamic){
+			trace("finished"); 
+			sound.play(0, 0);
+		});
+		
+		//need to got event sound complete
     }
 		
 	static function receiver(s:String){
