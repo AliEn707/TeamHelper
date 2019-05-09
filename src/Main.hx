@@ -1,6 +1,7 @@
 package;
 
 import haxe.io.Bytes;
+import haxe.network.Packet;
 import haxe.network.TcpConnection;
 import haxe.ui.HaxeUIApp;
 import haxe.ui.Toolkit;
@@ -31,15 +32,17 @@ class Main {
         //Toolkit.theme = "native";
 		Toolkit.autoScale = true;
         app = new HaxeUIApp();
-		trace(Audiorecorder.startRecording(function(a:Array<Int>){
+		
+		Audiorecorder.startRecording(function(a:Array<Int>){
 			trace(a);
 			trace(Type.getClassName(Type.getClass(a)));
 			trace(a.length);
 			var aa:Array<Int> = a;
 			trace(aa.length);
 			Audiorecorder.stopRecording();
-		}));
-        app.ready(function() {
+		});
+		
+		app.ready(function() {
             _main = ComponentMacros.buildComponent("assets/ui/init.xml");
 
             app.addComponent(_main);
