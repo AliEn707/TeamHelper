@@ -11,11 +11,12 @@ import haxe.ui.core.Component;
 import haxe.ui.core.Screen;
 import haxe.ui.core.MouseEvent;
 import haxe.ui.macros.ComponentMacros;
+import haxe.ui.macros.MacroHelpers;
 import lime.media.AudioBuffer;
 import openfl.media.Sound;
 import openfl.events.Event;
+import openfl.utils.Assets;
 
-import sys.io.File;
 
 class Main {
 	private static var _main:Null<Component>;
@@ -34,8 +35,8 @@ class Main {
             app.start();
         });
 		
-		cast(_main.findComponent("sound"), Button).onClick = function(e:MouseEvent){			
-			var wav:Bytes = File.getBytes("assets/sample.wav");
+		cast(_main.findComponent("sound"), Button).onClick = function(e:MouseEvent){	
+			var wav:Bytes = Assets.getBytes("assets/sample.wav");
 			var audio:AudioBuffer = AudioBuffer.fromBytes(wav);
 			trace(audio.bitsPerSample);
 			trace(audio.sampleRate);
