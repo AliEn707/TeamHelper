@@ -21,6 +21,7 @@
     <class path="C:\HaxeToolkit\haxe\lib\haxeui-core\0,0,4" />
     <class path="C:\HaxeToolkit\haxe\lib\hscript\2,3,0" />
     <class path="C:\HaxeToolkit\haxe\lib\haxe-tcpconnection\git\source" />
+    <class path="C:\HaxeToolkit\haxe\lib\extension-audiorecorder\git\source" />
     <class path="C:\HaxeToolkit\haxe\lib\openfl\8,9,0\src" />
     <class path="src" />
     <class path="C:\HaxeToolkit\haxe\lib\haxe-tcpconnection\git\source" />
@@ -28,7 +29,7 @@
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=7.3.0&#xA;actuate=1.8.9&#xA;haxeui-openfl=0.0.2&#xA;haxeui-core=0.0.4&#xA;hscript=2.3.0&#xA;haxe-tcpconnection=1.0.0&#xA;openfl=8.9.0&#xA;lime-harfbuzz&#xA;lime-openal&#xA;tools=7.3.0&#xA;lime-cairo&#xA;no-compilation&#xA;native&#xA;lime-opengles&#xA;lime-curl&#xA;lime-native&#xA;lime-vorbis&#xA;openfl-native&#xA;lime-cffi&#xA;openfl-disable-handle-error&#xA;fdb&#xA;android&#xA;mobile&#xA;android&#xA;android-9" />
+    <option directives="lime=7.3.0&#xA;actuate=1.8.9&#xA;haxeui-openfl=0.0.2&#xA;haxeui-core=0.0.4&#xA;hscript=2.3.0&#xA;haxe-tcpconnection=1.0.0&#xA;extension-audiorecorder=1.0.0&#xA;openfl=8.9.0&#xA;lime-harfbuzz&#xA;lime-openal&#xA;tools=7.3.0&#xA;lime-cairo&#xA;no-compilation&#xA;native&#xA;lime-opengles&#xA;lime-curl&#xA;lime-native&#xA;lime-vorbis&#xA;openfl-native&#xA;lime-cffi&#xA;openfl-disable-handle-error&#xA;fdb&#xA;android&#xA;mobile&#xA;android&#xA;android-9" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />

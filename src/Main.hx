@@ -17,17 +17,28 @@ import openfl.media.Sound;
 import openfl.events.Event;
 import openfl.utils.Assets;
 
+import haxe.extension.Audiorecorder;
+
 
 class Main {
 	private static var _main:Null<Component>;
 	static var app:HaxeUIApp;
 	static var _conn:TcpConnection;
 	
+
     public static function main() {
         //Toolkit.scale = 2.5;
         //Toolkit.theme = "native";
 		Toolkit.autoScale = true;
         app = new HaxeUIApp();
+		trace(Audiorecorder.startRecording(function(a:Array<Int>){
+			trace(a);
+			trace(Type.getClassName(Type.getClass(a)));
+			trace(a.length);
+			var aa:Array<Int> = a;
+			trace(aa.length);
+			Audiorecorder.stopRecording();
+		}));
         app.ready(function() {
             _main = ComponentMacros.buildComponent("assets/ui/init.xml");
 
@@ -48,22 +59,5 @@ class Main {
 		};
 		
     }
-		
-	static function receiver(s:String){
-//		trace("got " + s);
-		cast(_main.findComponent("text"), TextArea).text += s + "\n";
-		_conn.recvString(receiver);
-	}
-	
-	private static function switchToConn(){
-		if (_main != null)
-			app.removeComponent(_main);
-		_main = ComponentMacros.buildComponent("assets/ui/conn.xml");
-		app.addComponent(_main);
-		cast(_main.findComponent("send"), Button).onClick = function(e:MouseEvent){
-//			trace("send " +cast(_main.findComponent("message"), TextField).text);
-			_conn.sendString(cast(_main.findComponent("message"), TextField).text);
-		};
-		_conn.recvString(receiver);
-	}
 }
+
