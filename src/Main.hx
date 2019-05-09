@@ -34,18 +34,18 @@ class Main {
             app.start();
         });
 		
+		cast(_main.findComponent("sound"), Button).onClick = function(e:MouseEvent){			
+			var wav:Bytes = File.getBytes("assets/sample.wav");
+			var audio:AudioBuffer = AudioBuffer.fromBytes(wav);
+			trace(audio.bitsPerSample);
+			trace(audio.sampleRate);
+			var sound:Sound = Sound.fromAudioBuffer(audio);
+			sound.play(0, 0).addEventListener(Event.SOUND_COMPLETE, function(e:Dynamic){
+				trace("finished"); 
+				sound.play(0, 0);
+			});
+		};
 		
-		var wav:Bytes = File.getBytes("assets/sample.wav");
-		var audio:AudioBuffer = AudioBuffer.fromBytes(wav);
-		trace(audio.bitsPerSample);
-		trace(audio.sampleRate);
-		var sound:Sound = Sound.fromAudioBuffer(audio);
-		sound.play(0, 0).addEventListener(Event.SOUND_COMPLETE, function(e:Dynamic){
-			trace("finished"); 
-			sound.play(0, 0);
-		});
-		
-		//need to got event sound complete
     }
 		
 	static function receiver(s:String){

@@ -4,6 +4,5 @@
 		<textfield id="host" width="50%" text="localhost" />
 		<textfield id="port" width="50%" text="21308" />
 	</hbox>
-	<button id="server" width="100%" text="server"/>
-	<button id="connect" width="100%" text="connect"/>
+	<button id="sound" width="100%" text="sound"/>
 </vbox>
