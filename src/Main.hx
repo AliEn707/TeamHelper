@@ -1,5 +1,6 @@
 package;
 
+import haxe.Timer.delay;
 import haxe.io.Bytes;
 import haxe.network.Packet;
 import haxe.network.TcpConnection;
@@ -32,16 +33,7 @@ class Main {
         //Toolkit.theme = "native";
 		Toolkit.autoScale = true;
         app = new HaxeUIApp();
-		
-		Audiorecorder.startRecording(function(a:Array<Int>){
-			trace(a);
-			trace(Type.getClassName(Type.getClass(a)));
-			trace(a.length);
-			var aa:Array<Int> = a;
-			trace(aa.length);
-			Audiorecorder.stopRecording();
-		});
-		
+				
 		app.ready(function() {
             _main = ComponentMacros.buildComponent("assets/ui/init.xml");
 
@@ -49,18 +41,22 @@ class Main {
             app.start();
         });
 		
-		cast(_main.findComponent("sound"), Button).onClick = function(e:MouseEvent){	
-			var wav:Bytes = Assets.getBytes("assets/sample.wav");
-			var audio:AudioBuffer = AudioBuffer.fromBytes(wav);
-			trace(audio.bitsPerSample);
-			trace(audio.sampleRate);
-			var sound:Sound = Sound.fromAudioBuffer(audio);
-			sound.play(0, 0).addEventListener(Event.SOUND_COMPLETE, function(e:Dynamic){
-				trace("finished"); 
-				sound.play(0, 0);
-			});
+		cast(_main.findComponent("sound"), Button).onClick = function(e:MouseEvent){
+			delay(function(){Audiorecorder.stopRecording(); }, 10000);
+			Audiorecorder.startRecordingBluetooth(function(a:Array<Int>){
+				//trace(a);
+				var sound:Sound = Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(Audiorecorder.getBytes(a)));
+				sound.play(0, 0).addEventListener(Event.SOUND_COMPLETE, function(e:Dynamic){
+					trace("finished"); 
+					//sound.play(0, 0);
+				});
+			},function(e:Dynamic){
+				trace(e);
+			}, function(){
+				trace("ready");
+			},2000);
 		};
-		
     }
+	
 }
 
