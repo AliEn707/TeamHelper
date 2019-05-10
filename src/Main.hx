@@ -17,6 +17,7 @@ import haxe.ui.macros.MacroHelpers;
 import lime.media.AudioBuffer;
 import openfl.media.Sound;
 import openfl.events.Event;
+import openfl.system.System;
 import openfl.utils.Assets;
 
 import haxe.extension.Audiorecorder;
@@ -45,11 +46,7 @@ class Main {
 			delay(function(){Audiorecorder.stopRecording(); }, 10000);
 			Audiorecorder.startRecordingBluetooth(function(a:Array<Int>){
 				//trace(a);
-				var sound:Sound = Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(Audiorecorder.getBytes(a)));
-				sound.play(0, 0).addEventListener(Event.SOUND_COMPLETE, function(e:Dynamic){
-					trace("finished"); 
-					//sound.play(0, 0);
-				});
+				Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(Audiorecorder.getBytes(a))).play(0, 0);//.addEventListener(Event.SOUND_COMPLETE, function(e:Dynamic){trace("finished");});
 			},function(e:Dynamic){
 				trace(e);
 			}, function(){
