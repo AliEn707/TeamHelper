@@ -44,9 +44,9 @@ class Main {
 		
 		cast(_main.findComponent("sound"), Button).onClick = function(e:MouseEvent){
 			delay(function(){Audiorecorder.stopRecording(); }, 10000);
-			Audiorecorder.startRecordingBluetooth(function(a:Array<Int>){
+			Audiorecorder.startRecording(function(a:Bytes){
 				//trace(a);
-				Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(Audiorecorder.getBytes(a))).play(0, 0);//.addEventListener(Event.SOUND_COMPLETE, function(e:Dynamic){trace("finished");});
+				Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(a)).play(0, 0);//.addEventListener(Event.SOUND_COMPLETE, function(e:Dynamic){trace("finished");});
 			},function(e:Dynamic){
 				trace(e);
 			}, function(){

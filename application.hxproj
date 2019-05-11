@@ -20,12 +20,12 @@
     <class path="C:\HaxeToolkit\haxe\lib\haxeui-openfl\0,0,2" />
     <class path="C:\HaxeToolkit\haxe\lib\haxeui-core\0,0,4" />
     <class path="C:\HaxeToolkit\haxe\lib\hscript\2,3,0" />
-    <class path="C:\HaxeToolkit\haxe\lib\haxe-tcpconnection\git\source" />
-    <class path="C:\HaxeToolkit\haxe\lib\extension-audiorecorder\git\source" />
+    <class path="C:\Users\AliEn707\Documents\GitHub\haxe-tcpconnection\source" />
+    <class path="C:\Users\AliEn707\Documents\GitHub\extension-audiorecorder\source" />
     <class path="C:\HaxeToolkit\haxe\lib\openfl\8,9,0\src" />
     <class path="C:\HaxeToolkit\haxe\lib\android6permissions\0,1,0" />
     <class path="src" />
-    <class path="C:\HaxeToolkit\haxe\lib\haxe-tcpconnection\git\source" />
+    <class path="C:\Users\AliEn707\Documents\GitHub\haxe-tcpconnection\source" />
     <class path="export\android\haxe" />
   </classpaths>
   <!-- Build options -->
