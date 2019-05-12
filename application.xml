@@ -7,7 +7,7 @@
     <window width="800" height="600" if="desktop" />
 
     <!-- classpath, haxe libs -->
-    <source path="src" />
+    <source path="source" />
 
     <haxelib name="openfl" />
     <haxelib name="actuate" />
