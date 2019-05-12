@@ -6,11 +6,13 @@ import haxe.ui.Toolkit;
 import openfl.Lib;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
-import states.System;
+
 
 class Main {
+	//elements that can be stay in memmory for long time
     public static function main() {
-        //Toolkit.scale = 2.5;
+		Settings.init();
+		//Toolkit.scale = 2.5;
         //Toolkit.theme = "native";
 		Toolkit.autoScale = true;
         StateManager.init(function() {			
@@ -24,22 +26,26 @@ class Main {
 				}
 			});
 			Lib.current.stage.addEventListener(Event.DEACTIVATE, function(e:Dynamic){
-				//trace("go to background");
+				trace("go to background");
 				StateManager.hidden = true;
-				//add notification
+				if (StateManager.inited){
+					//we steel running
+					//TODO: add notification
+				}else{
+					//app finished
+				}
 			});
 			Lib.current.stage.addEventListener(Event.ACTIVATE, function(e:Dynamic){
-				//trace("return from background");
+				trace("return from background");
 				StateManager.hidden = false;
-				//remove notification
+				if (StateManager.inited){
+					//app get from background
+					//TODO: remove notification
+				}else{
+					//app started, need to reinit 
+					StateManager.init(function(){trace("restarted"); });
+				}
 			});
-			Lib.current.stage.addEventListener(Event.CLOSE, function(e:Dynamic){
-				//trace("on closing");
-				//remove notification
-			});
-			
-
-			StateManager.pushState(new System());//add base stage
         });
     }
 	

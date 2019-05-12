@@ -19,6 +19,10 @@ class StateBase{
 	}
 	
 	public function onDestroy(){
+		clean();
+	}
+	
+	public function clean(){
 		StateManager.app.removeComponent(_comp);
 	}
 }

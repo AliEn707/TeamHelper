@@ -15,6 +15,8 @@
     <haxelib name="haxeui-core" />
     <haxelib name="haxeui-openfl" />
     <haxelib name="haxe-tcpconnection" />
+	
+    <haxelib name="yaml" />
 
     <assets path="assets/ui" rename="ui" />
 </project>

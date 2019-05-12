@@ -14,6 +14,8 @@ import haxe.ui.core.MouseEvent;
  */
 class System extends StateBase{
 
+	private inline var port:Int = 21308;
+	
 	private var _conn:TcpConnection;
 	
 	public function new(){
@@ -66,8 +68,15 @@ class System extends StateBase{
 		exit();
 	}
 	
+	override
+	public function clean(){
+		super.clean();
+	}
+	
 	private function exit(){
-	#if flash
+		StateManager.inited = false;
+		StateManager.clean();
+	#if flash	
 		openfl.system.System.exit(0);
 	#else
 		Sys.exit(0);
