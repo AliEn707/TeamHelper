@@ -18,5 +18,8 @@
 	
     <haxelib name="yaml" />
 
-    <assets path="assets/ui" rename="ui" />
+    <!--<assets path="assets/ui" rename="ui" />-->
+    <assets path="assets" />
+	
+	<architecture name="x86" if="android" unless="debug" />
 </project>
