@@ -33,8 +33,13 @@ class Settings{
 		}catch(e:Any){}
 	}
 	
-	public static function get(key:String):Any{
-		return _data.get(key);
+	public static function get(key:String, ?def:Any):Any{
+		var val = _data.get(key);
+		if (val == null){
+			val = def;
+			set(key, def);
+		}
+		return val;
 	}
 	
 	public static function set(key:String, val:Any){

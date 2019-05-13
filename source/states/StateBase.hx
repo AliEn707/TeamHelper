@@ -12,6 +12,7 @@ class StateBase{
 	
 	public function new(){
 		StateManager.app.addComponent(_comp);
+		//.dispatchEvent(new JoystickEvent(JoystickEvent.DEVICE_ADDED, true, false, id, 0, 0));
 	}
 	
 	public function back(){

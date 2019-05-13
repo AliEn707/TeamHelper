@@ -14,9 +14,12 @@
 
     <haxelib name="haxeui-core" />
     <haxelib name="haxeui-openfl" />
+	
     <haxelib name="haxe-tcpconnection" />
+    <haxelib name="extension-audiorecorder" />
 	
     <haxelib name="yaml" />
+    <haxelib name="haxe-crypto" />
 
     <!--<assets path="assets/ui" rename="ui" />-->
     <assets path="assets" />

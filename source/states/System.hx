@@ -19,6 +19,14 @@ class System extends StateBase{
 	public function new(){
 		_comp = ComponentMacros.buildComponent("assets/ui/system.xml");
 		super();
+		if (!cast(Settings.get("server_disabled", false), Bool))
+			NetworkManager.startServer(function(i:Int){
+				trace("client connected "+ NetworkManager.getClient(i).host);
+			},function(){
+				trace("server started");
+			}, function(){
+				trace("server error");
+			});
 	}
 	
 	private function test(){
@@ -73,7 +81,10 @@ class System extends StateBase{
 	
 	private function exit(){
 		StateManager.inited = false;
+		
+		NetworkManager.close();
 		StateManager.clean();
+		
 	#if flash	
 		openfl.system.System.exit(0);
 	#else
