@@ -1,6 +1,7 @@
 package states;
 
 import haxe.network.TcpConnection;
+import haxe.network.Packet;
 import haxe.ui.HaxeUIApp;
 import haxe.ui.macros.ComponentMacros;
 import haxe.ui.components.Button;
@@ -8,13 +9,14 @@ import haxe.ui.components.TextArea;
 import haxe.ui.components.TextField;
 import haxe.ui.core.MouseEvent;
 
+import NetworkManager.MsgType;
 /**
  * ...
  * @author ...
  */
 class System extends StateBase{
 	
-	private var _conn:TcpConnection;
+	private var _conn:Null<TcpConnection>;
 	
 	public function new(){
 		_comp = ComponentMacros.buildComponent("assets/ui/system.xml");
@@ -27,15 +29,16 @@ class System extends StateBase{
 			}, function(){
 				trace("server error");
 			});
+			
+			test();
 	}
 	
 	private function test(){
 		cast(_comp.findComponent("connect"), Button).onClick = function(e:MouseEvent){
 				trace(cast(_comp.findComponent("host"), TextField).text);
-				trace(Std.parseInt(cast(_comp.findComponent("port"), TextField).text));
 				(new TcpConnection()).connect(
 					cast(_comp.findComponent("host"), TextField).text,
-					Std.parseInt(cast(_comp.findComponent("port"), TextField).text),
+					NetworkManager.port,
 					function(conn:TcpConnection){
 						trace("connected");
 						_conn = conn;
@@ -46,24 +49,15 @@ class System extends StateBase{
 					}
 				);
 			};
-			
-		#if !flash
-			cast(_comp.findComponent("server"),Button).onClick = function(e:MouseEvent){	
-				(new TcpConnection()).listen(
-					Std.parseInt(cast(_comp.findComponent("port"), TextField).text),
-					function(conn:TcpConnection){
-						_conn = conn;
-					},
-					function(conn:TcpConnection){
-						trace("started");
-						_comp.removeComponent(_comp.findComponent("server"));
-					},
-					function(e:Dynamic){
-						trace(e);
-					}
-				);
+		cast(_comp.findComponent("send"), Button).onClick = function(e:MouseEvent){
+				trace("pressed");
+				var p:Packet = new Packet();
+				p.addShort(NetworkManager.id);
+				p.addShort(MsgType.DEBUG);
+				p.addString(cast(_comp.findComponent("message"), TextField).text);
+				if (_conn !=null)
+					_conn.sendPacket(p);
 			};
-		#end
 	}
 	
 	override

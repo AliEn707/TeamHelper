@@ -2,8 +2,12 @@
 <vbox id="main" width="100%" height="600" style="padding:15px;spacing:15px;">
 	<hbox width="100%">
 		<textfield id="host" width="50%" text="localhost" />
-		<textfield id="port" width="50%" text="21308" />
+		<button id="connect" width="50%" text="connect"/>
 	</hbox>
-	<button id="server" width="100%" text="server"/>
-	<button id="connect" width="100%" text="connect"/>
+	
+	<textarea id="text" width="100%" height="80%"/>
+    <hbox width="100%">
+        <textfield id="message" width="90%" />
+		<button id="send" width="10%" text="Send"/>
+    </hbox>
 </vbox>

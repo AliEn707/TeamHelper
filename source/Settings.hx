@@ -35,7 +35,7 @@ class Settings{
 	
 	public static function get(key:String, ?def:Any):Any{
 		var val = _data.get(key);
-		if (val == null){
+		if (val == null && def != null){
 			val = def;
 			set(key, def);
 		}

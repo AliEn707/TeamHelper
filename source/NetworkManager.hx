@@ -15,7 +15,7 @@ import openfl.extension.Audiorecorder;
  * @author ...
  */
 class NetworkManager{
-	private static inline var _port:Int = 21308;
+	public static inline var port:Int = 21308;
 	
 	public static var id:Int = 0;
 	public static var host:String = "";
@@ -26,13 +26,13 @@ class NetworkManager{
 	private static var _host:Null<TcpConnection> = null; //connection to host
 
 	public static function startServer(onconnected:Int->Void, ready:Void->Void, error:Void->Void){
-		(_server = new TcpConnection()).listen(_port, function(conn:TcpConnection){
+		(_server = new TcpConnection()).listen(port, function(conn:TcpConnection){
 			var c:Client = new Client(conn);
 			addClient(c);
 			conn.setFailCallback(function(e:Dynamic){
 				removeClient(c.id);
 			});
-			if (id==null){
+			if (id==0){
 				setId(conn);
 			}
 			onconnected(c.id);
@@ -51,7 +51,8 @@ class NetworkManager{
 	} 
 	
 	public static function connect(host:String, ?success:Int->Void, ?fail:Void->Void, ?onDisconnect:Void->Void){
-		(new TcpConnection()).connect(host, _port, function(conn:TcpConnection){
+		(new TcpConnection()).connect(host, port, function(conn:TcpConnection){
+			conn.sendShort(0);//important
 			_host = conn;
 			var c:Client = new Client(conn);
 			addClient(c);
@@ -63,7 +64,7 @@ class NetworkManager{
 			});
 			if (success!=null)
 				success(c.id);
-			if (id==null){
+			if (id==0){
 				setId(conn);
 			}
 			//sent info about self 
@@ -101,7 +102,7 @@ class NetworkManager{
 	
 	public static function proceedMessage(message:Bytes, from:Int){
 		var p:Packet = Packet.fromBytes(message);
-		if (!p.chanks[0].isInt()){
+		if (!p.chanks[0].isShort()){
 			trace("Wrong message!");
 			return;
 		}
@@ -112,6 +113,8 @@ class NetworkManager{
 			c.over = from;
 		}
 		switch(p.chanks[1].data){
+			case MsgType.DEBUG:
+				trace("got "+p.chanks[2].data);
 			case MsgType.CLIENTINFO:
 				trace("client info");
 			case MsgType.ASKCLIENTINFO:
@@ -156,7 +159,7 @@ class NetworkManager{
 		_lock.unlock();
 	}
 	
-	public static function get16from32(i:Int){
+	public static function get16from32(i:Int):Int{
 		var b = Bytes.alloc(2);
 		b.setUInt16(0,i);
 		return b.getUInt16(0);
@@ -179,7 +182,9 @@ class Client{
 	}
 	
 	private function getMessage(b:Int){
-		conn.recvBytes(function(bytes:Bytes){NetworkManager.proceedMessage(bytes, id);}, b);
+		conn.recvBytes(function(bytes:Bytes){
+			NetworkManager.proceedMessage(bytes, id);
+		}, b);
 		conn.recvUShort(getMessage);
 	}
 }
@@ -188,4 +193,5 @@ class MsgType{
 	public static inline var CLIENTINFO:Int = 1;
 	public static inline var SOUND:Int = 2;
 	public static inline var ASKCLIENTINFO:Int = 3;
+	public static inline var DEBUG:Int = 4;
 }
