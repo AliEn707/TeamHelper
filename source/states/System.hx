@@ -13,8 +13,6 @@ import haxe.ui.core.MouseEvent;
  * @author ...
  */
 class System extends StateBase{
-
-	private inline var port:Int = 21308;
 	
 	private var _conn:TcpConnection;
 	

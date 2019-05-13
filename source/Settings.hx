@@ -25,7 +25,7 @@ class Settings{
 			}catch(e1:Dynamic){
 				trace(e1); 
 			}
-			data = Yaml.parse("{}");
+			data = Yaml.read(_path+_file);// Yaml.parse("{}");
 		}
 		try{
 			for (o in data.keys())
