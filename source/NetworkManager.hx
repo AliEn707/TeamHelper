@@ -159,6 +159,13 @@ class NetworkManager{
 		_lock.unlock();
 	}
 	
+	public static function searchLocalHosts(hosts:Array<String>, onFound:String->Void, onEnd:Void->Void){
+		TcpConnection.checkHosts(hosts.map(function(s:String):Any{return {host:s, port:port}; }), function(host:String, port:Int){
+			onFound(host);
+		}, onEnd);
+	}
+	
+	
 	public static function get16from32(i:Int):Int{
 		var b = Bytes.alloc(2);
 		b.setUInt16(0,i);

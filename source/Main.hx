@@ -6,6 +6,7 @@ import haxe.ui.Toolkit;
 import openfl.Lib;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
+import openfl.events.EventType;
 
 
 class Main {
@@ -48,8 +49,4 @@ class Main {
 			});
         });
     }
-	
-	private static function initBackButton(){
-		
-	}
 }

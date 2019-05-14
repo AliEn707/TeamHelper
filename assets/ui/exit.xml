@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<box id="modal" width="100%" height="100%" style="background-color:#555;opacity:0.6;">
+	<vbox width="40%" top="400" style="border: 2px solid #DDDDDD;padding:5px;background-color:#FFFFFF;" verticalAlign="center" horizontalAlign="center">
+		<label text="Exit?" horizontalAlign="center"/>
+		<hbox width="100%">
+			<vbox width="50%">
+				<button id="yesbutton" text="yes" width="50%" style="padding:5px;" horizontalAlign="center" />
+			</vbox>
+			<vbox width="50%">
+				<button id="nobutton" text="no" width="50%" style="padding:5px;" horizontalAlign="center" />
+			</vbox>
+		</hbox>
+	</vbox>
+</box>
