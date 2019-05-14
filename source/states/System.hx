@@ -1,5 +1,6 @@
 package states;
 
+import haxe.Timer;
 import haxe.Timer.delay;
 import haxe.network.TcpConnection;
 import haxe.network.Packet;
@@ -18,9 +19,11 @@ import NetworkManager.MsgType;
  * @author ...
  */
 class System extends StateBase{
+	public static var instance:Null<StateBase>;
 	
 	private var _conn:Null<TcpConnection>;
-	
+	private var _gethosttimer:Timer;
+
 	public function new(){
 		_comp = ComponentMacros.buildComponent("assets/ui/system.xml");
 		super();
@@ -33,7 +36,17 @@ class System extends StateBase{
 				trace("server error");
 			});
 		}	
+		_gethosttimer = new Timer(3000);
+		_gethosttimer.run=TcpConnection.getMyHost.bind(getIP);
+		////
 		test();
+	}
+	
+	public static function get():StateBase {
+		if (instance == null)
+			instance = new System();
+		instance._comp.show();
+		return instance;
 	}
 	
 	private function test(){
@@ -61,14 +74,12 @@ class System extends StateBase{
 			if (_conn !=null)
 				_conn.sendPacket(p);
 		};
-		TcpConnection.getMyHost(getIP);
 	}
 	
 	public function getIP(host:String){
 		if (["localhost","127.0.0.1"].indexOf(host)==-1){
-			cast(_comp.findComponent("iplabel"), Label).text="Local ip address is '"+host+"'";
-		}else{
-			delay(TcpConnection.getMyHost.bind(getIP), 1000);
+			cast(_comp.findComponent("iplabel"), Label).text = "Local ip address is '" + host + "'";
+			_gethosttimer.stop();
 		}
 	}
 	
@@ -76,11 +87,13 @@ class System extends StateBase{
 	public function onDestroy(){
 		StateManager.pushState(this);//can't be deleted
 		//show popup "exit?"
-		StateManager.pushState(new Exit());
+		StateManager.pushState(Exit.get());
 	}
 	
 	override
 	public function clean(){
 		super.clean();
+		_gethosttimer.stop();
+		instance == null;
 	}
 }

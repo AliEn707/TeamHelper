@@ -14,6 +14,8 @@ import openfl.events.KeyboardEvent;
 class StateBase{
 	private var _comp:Component; 
 	
+	public static var instance:Null<StateBase>;
+	
 	public function new(){
 		StateManager.app.addComponent(_comp);
 //		FocusManager.instance.pushView(_comp);
@@ -21,12 +23,13 @@ class StateBase{
 	}
 	
 	public function onDestroy(){
-		clean();
+		_comp.hide();
 	}
 	
 	public function clean(){
 //		FocusManager.instance.popView();
 		StateManager.app.removeComponent(_comp);
+		instance == null;
 	}
 	
 	public function back(e:MouseEvent){

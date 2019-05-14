@@ -9,6 +9,7 @@ import haxe.ui.macros.ComponentMacros;
  * @author ...
  */
 class Exit extends StateBase{
+	public static var instance:Null<StateBase>;
 
 	public function new(){
 		_comp = ComponentMacros.buildComponent("assets/ui/exit.xml");
@@ -16,6 +17,13 @@ class Exit extends StateBase{
 		
 		cast(_comp.findComponent("nobutton"), Button).onClick = back;
 		cast(_comp.findComponent("yesbutton"), Button).onClick = exit;
+	}
+	
+	public static function get():StateBase {
+		if (instance == null)
+			instance = new Exit();
+		instance._comp.show();
+		return instance;
 	}
 	
 	private function exit(e:MouseEvent){
@@ -29,5 +37,11 @@ class Exit extends StateBase{
 	#else
 		Sys.exit(0);
 	#end
+	}
+	
+	override
+	public function clean(){
+		super.clean();
+		instance == null;
 	}
 }

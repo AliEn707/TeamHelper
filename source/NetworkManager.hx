@@ -57,7 +57,9 @@ class NetworkManager{
 	public static function close(){
 		_server.close();
 		for (c in _channels){
-			c.conn.close();
+			try{
+				c.conn.close();
+			}catch(e:Any){}
 		}
 	} 
 	
@@ -140,19 +142,22 @@ class NetworkManager{
 				client.host = p.chanks[2].data;
 				SoundManager.addConfig(client.id, p.chanks[3].data, p.chanks[4].data, p.chanks[5].data);//TODO: add try catch
 			case MsgType.ASKCLIENTINFO:
-				var client = getClient(sender);
 				var co:Null<Client> = getClient(p.chanks[1].data);
 				if (co != null){
+					var client = getClient(sender);
 					if (client.conn!=null){
-						var p:Packet = new Packet();
-							p.addShort(id);
-							p.addByte(MsgType.CLIENTINFO);
-							p.addShort(co.id);
-							p.addString(co.host);
-							p.addInt(SoundManager.getConfig(co.id).RECORDER_SAMPLERATE);
-							p.addInt(SoundManager.getConfig(co.id).RECORDER_CHANNELS);
-							p.addInt(SoundManager.getConfig(co.id).RECORDER_BITS);
-						client.conn.sendPacket(p);
+						var conf = SoundManager.getConfig(co.id);
+						if (conf != null){
+							var p:Packet = new Packet();
+								p.addShort(id);
+								p.addByte(MsgType.CLIENTINFO);
+								p.addShort(co.id);
+								p.addString(co.host);
+								p.addInt(conf.RECORDER_SAMPLERATE);
+								p.addInt(conf.RECORDER_CHANNELS);
+								p.addInt(conf.RECORDER_BITS);
+							client.conn.sendPacket(p);
+						}
 					}
 				}else if (_host!=null){//TODO: check if it needed
 					var p:Packet = new Packet();

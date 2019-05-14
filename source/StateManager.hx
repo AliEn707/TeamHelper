@@ -20,7 +20,7 @@ class StateManager
 	public static function init(ready:Void->Void){ 
 		app = new HaxeUIApp();
 		app.ready(function(){
-			StateManager.pushState(new System());//add base stage
+			StateManager.pushState(System.get());//add base stage
 			ready();
 			inited = true;
 			app.start();

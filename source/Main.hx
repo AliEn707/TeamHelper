@@ -13,9 +13,11 @@ class Main {
 	//elements that can be stay in memmory for long time
     public static function main() {
 		Settings.init();
-		//Toolkit.scale = 2.5;
+		//Toolkit.scale = 1.5;
         //Toolkit.theme = "native";
 		Toolkit.autoScale = true;
+		//Toolkit.autoScaleDPIThreshold = 100;//168
+		//Toolkit.pixelsPerRem = 32;//16
         StateManager.init(function() {			
 			Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, function(e:KeyboardEvent){
 //				trace(e);
