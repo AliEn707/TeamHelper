@@ -35,6 +35,17 @@ class NetworkManager{
 			if (id==0){
 				setId(conn);
 			}
+			var p:Packet = new Packet();
+				p.type=MsgType.CLIENTINFO;
+				p.addShort(id);//sender id
+				p.addShort(id);//info id
+				p.addString(host);
+				p.addInt(Audiorecorder.RECORDER_SAMPLERATE);
+				p.addInt(Audiorecorder.RECORDER_CHANNELS);
+				p.addInt(Audiorecorder.RECORDER_BITS);
+			//add other data
+			conn.sendPacket(p);
+
 			onconnected(c.id);
 		}, function(conn:TcpConnection){
 			ready();
@@ -69,10 +80,10 @@ class NetworkManager{
 			}
 			//sent info about self 
 			var p:Packet = new Packet();
-				p.addShort(id);
-				p.addByte(MsgType.CLIENTINFO);
-				p.addShort(c.id);
-				p.addString(c.host);
+				p.type = MsgType.CLIENTINFO;
+				p.addShort(id);//sender
+				p.addShort(id);//info id
+				p.addString(host);
 				p.addInt(Audiorecorder.RECORDER_SAMPLERATE);
 				p.addInt(Audiorecorder.RECORDER_CHANNELS);
 				p.addInt(Audiorecorder.RECORDER_BITS);
@@ -111,16 +122,47 @@ class NetworkManager{
 			var c:Client = new Client();
 			c.id = sender;
 			c.over = from;
+			var clientfrom = getClient(from);
+			if (clientfrom != null){//if we get info about client where we got package
+				//get data from host
+				var p:Packet = new Packet();
+					p.type=MsgType.ASKCLIENTINFO;
+					p.addShort(id);
+					p.addShort(c.id);		
+				clientfrom.conn.sendPacket(p);
+			}
 		}
-		switch(p.chanks[1].data){
+		switch(p.type){
 			case MsgType.DEBUG:
-				trace("got "+p.chanks[2].data);
+				trace("got "+p.chanks[1].data);
 			case MsgType.CLIENTINFO:
-				trace("client info");
+				var client = getClient(p.chanks[1].data);
+				client.host = p.chanks[2].data;
+				SoundManager.addConfig(client.id, p.chanks[3].data, p.chanks[4].data, p.chanks[5].data);//TODO: add try catch
 			case MsgType.ASKCLIENTINFO:
-				trace("need to answer client data");
+				var client = getClient(sender);
+				var co:Null<Client> = getClient(p.chanks[1].data);
+				if (co != null){
+					if (client.conn!=null){
+						var p:Packet = new Packet();
+							p.addShort(id);
+							p.addByte(MsgType.CLIENTINFO);
+							p.addShort(co.id);
+							p.addString(co.host);
+							p.addInt(SoundManager.getConfig(co.id).RECORDER_SAMPLERATE);
+							p.addInt(SoundManager.getConfig(co.id).RECORDER_CHANNELS);
+							p.addInt(SoundManager.getConfig(co.id).RECORDER_BITS);
+						client.conn.sendPacket(p);
+					}
+				}else if (_host!=null){//TODO: check if it needed
+					var p:Packet = new Packet();
+						p.type=MsgType.ASKCLIENTINFO;
+						p.addShort(id);
+						p.addShort(sender);		
+					_host.sendPacket(p);
+				}
 			case MsgType.SOUND:
-				trace("need to play sound");
+				SoundManager.addSound(p.chanks[1].data, sender);
 				broadcastBytesSize(message, message.length, from);
 		}
 	}

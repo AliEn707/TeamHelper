@@ -3,6 +3,7 @@ package states;
 import haxe.ui.HaxeUIApp;
 import haxe.ui.core.Component;
 import haxe.ui.core.MouseEvent;
+//import haxe.ui.focus.FocusManager;
 import openfl.Lib;
 import openfl.events.KeyboardEvent;
 
@@ -15,6 +16,7 @@ class StateBase{
 	
 	public function new(){
 		StateManager.app.addComponent(_comp);
+//		FocusManager.instance.pushView(_comp);
 		//;
 	}
 	
@@ -23,6 +25,7 @@ class StateBase{
 	}
 	
 	public function clean(){
+//		FocusManager.instance.popView();
 		StateManager.app.removeComponent(_comp);
 	}
 	
