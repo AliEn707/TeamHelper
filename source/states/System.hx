@@ -2,6 +2,7 @@ package states;
 
 import haxe.Timer;
 import haxe.Timer.delay;
+import haxe.io.Bytes;
 import haxe.network.TcpConnection;
 import haxe.network.Packet;
 import haxe.ui.HaxeUIApp;
@@ -12,6 +13,8 @@ import haxe.ui.components.Button;
 import haxe.ui.components.TextArea;
 import haxe.ui.components.TextField;
 import haxe.ui.core.MouseEvent;
+import openfl.extension.Audiorecorder;
+import openfl.media.Sound;
 
 import NetworkManager.MsgType;
 /**
@@ -27,18 +30,12 @@ class System extends StateBase{
 	public function new(){
 		_comp = ComponentMacros.buildComponent("assets/ui/system.xml");
 		super();
-		if (!cast(Settings.get("server_disabled", false), Bool)){
-			NetworkManager.startServer(function(i:Int){
-				trace("client connected "+ NetworkManager.getClient(i).host);
-			},function(){
-				trace("server started");
-			}, function(){
-				trace("server error");
-			});
-		}	
-		_gethosttimer = new Timer(3000);
-		_gethosttimer.run=TcpConnection.getMyHost.bind(getIP);
-		////
+		////initialisation that not needed to reset on resume
+		delay(function(){SoundManager.stopRecording(); }, 9000);
+		SoundManager.setupAudio([8000], [8], [1]);
+		SoundManager.startRecording(function(b:Bytes){
+			Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(b));
+		}, function(s:String){}, function(){}, 8000);
 		test();
 	}
 	
@@ -81,6 +78,23 @@ class System extends StateBase{
 			cast(_comp.findComponent("iplabel"), Label).text = "Local ip address is '" + host + "'";
 			_gethosttimer.stop();
 		}
+	}
+	
+	override 
+	function init(){
+		super.init();
+		////initialisation that needed to reset on resume
+		if (!cast(Settings.get("server_disabled", false), Bool)){
+			NetworkManager.startServer(function(i:Int){
+				trace("client connected "+ NetworkManager.getClient(i).host);
+			},function(){
+				trace("server started");
+			}, function(){
+				trace("server error");
+			});
+		}	
+		_gethosttimer = new Timer(3000);
+		_gethosttimer.run=TcpConnection.getMyHost.bind(getIP);		
 	}
 	
 	override

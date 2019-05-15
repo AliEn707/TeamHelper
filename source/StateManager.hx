@@ -31,6 +31,7 @@ class StateManager
 	
 	public static function pushState(state:StateBase){
 		_states.push(state);
+		state.init();
 	}
 	
 	public static function popState(){

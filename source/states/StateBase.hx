@@ -32,6 +32,10 @@ class StateBase{
 		instance == null;
 	}
 	
+	public function init(){
+		
+	}
+	
 	public function back(e:MouseEvent){
 		Lib.current.stage.dispatchEvent(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, 27, 27));
 		Lib.current.stage.dispatchEvent(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, 27, 27));

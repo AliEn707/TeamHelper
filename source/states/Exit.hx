@@ -14,6 +14,7 @@ class Exit extends StateBase{
 	public function new(){
 		_comp = ComponentMacros.buildComponent("assets/ui/exit.xml");
 		super();
+		////initialisation that needed to reset on resume
 		
 		cast(_comp.findComponent("nobutton"), Button).onClick = back;
 		cast(_comp.findComponent("yesbutton"), Button).onClick = exit;
@@ -38,7 +39,14 @@ class Exit extends StateBase{
 		Sys.exit(0);
 	#end
 	}
-	
+
+	override 
+	function init(){
+		super.init();
+		////initialisation that needed to reset on resume
+		
+	}
+
 	override
 	public function clean(){
 		super.clean();
