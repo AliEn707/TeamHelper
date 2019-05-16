@@ -3,6 +3,7 @@ package states;
 import haxe.ui.HaxeUIApp;
 import haxe.ui.core.Component;
 import haxe.ui.core.MouseEvent;
+import lime.ui.KeyCode;
 //import haxe.ui.focus.FocusManager;
 import openfl.Lib;
 import openfl.events.KeyboardEvent;
@@ -37,7 +38,7 @@ class StateBase{
 	}
 	
 	public function back(e:MouseEvent){
-		Lib.current.stage.dispatchEvent(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, 27, 27));
-		Lib.current.stage.dispatchEvent(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, 27, 27));
+		Lib.current.stage.dispatchEvent(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, KeyCode.ESCAPE, KeyCode.ESCAPE));
+		Lib.current.stage.dispatchEvent(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, KeyCode.ESCAPE, KeyCode.ESCAPE));
 	}
 }

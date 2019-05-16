@@ -3,6 +3,7 @@ package states;
 import haxe.Timer;
 import haxe.Timer.delay;
 import haxe.io.Bytes;
+import haxe.io.BytesInput;
 import haxe.network.TcpConnection;
 import haxe.network.Packet;
 import haxe.ui.HaxeUIApp;
@@ -31,6 +32,11 @@ class System extends StateBase{
 		_comp = ComponentMacros.buildComponent("assets/ui/system.xml");
 		super();
 		////initialisation that not needed to reset on resume
+		//SoundManager.setupAudio([8000], [16], [1]);
+		//test to start audiorecord for filling audio settings
+		SoundManager.startRecording(function(b:Bytes){}, function(s:String){}, function(){ 
+			SoundManager.stopRecording();
+		}, 700);
 		
 		test();
 	}
@@ -42,18 +48,25 @@ class System extends StateBase{
 		return instance;
 	}
 	
+	private var playing:Bool = false;
 	private function test(){
 		cast(_comp.findComponent("sound"), Button).onClick = function(e:MouseEvent){
-			delay(function(){SoundManager.stopRecording(); }, 9000);
-			//SoundManager.setupAudio([8000], [8], [1]);
-			SoundManager.startRecording(function(b:Bytes){
-				trace(b.length);
-				Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(b));
-			}, function(s:String){
-				
-			}, function(){
-				
-			}, 3000);
+			if (!playing){
+				playing = true;
+				SoundManager.startRecording(function(b:Bytes){
+					//trace(b.length);
+					Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(b)).play();
+				}, function(s:String){
+					trace(s);
+				}, function(){
+					trace("ok");
+				}, 700);
+				cast(_comp.findComponent("sound"), Button).text = "stop";
+			}else{
+				playing = false;
+				SoundManager.stopRecording();
+				cast(_comp.findComponent("sound"), Button).text = "start playing";
+			}
 		}
 		cast(_comp.findComponent("connect"), Button).onClick = function(e:MouseEvent){
 			trace(cast(_comp.findComponent("host"), TextField).text);
