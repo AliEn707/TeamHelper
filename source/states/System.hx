@@ -31,11 +31,7 @@ class System extends StateBase{
 		_comp = ComponentMacros.buildComponent("assets/ui/system.xml");
 		super();
 		////initialisation that not needed to reset on resume
-		delay(function(){SoundManager.stopRecording(); }, 9000);
-		SoundManager.setupAudio([8000], [8], [1]);
-		SoundManager.startRecording(function(b:Bytes){
-			Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(b));
-		}, function(s:String){}, function(){}, 8000);
+		
 		test();
 	}
 	
@@ -47,6 +43,18 @@ class System extends StateBase{
 	}
 	
 	private function test(){
+		cast(_comp.findComponent("sound"), Button).onClick = function(e:MouseEvent){
+			delay(function(){SoundManager.stopRecording(); }, 9000);
+			//SoundManager.setupAudio([8000], [8], [1]);
+			SoundManager.startRecording(function(b:Bytes){
+				trace(b.length);
+				Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(b));
+			}, function(s:String){
+				
+			}, function(){
+				
+			}, 3000);
+		}
 		cast(_comp.findComponent("connect"), Button).onClick = function(e:MouseEvent){
 			trace(cast(_comp.findComponent("host"), TextField).text);
 			(new TcpConnection()).connect(

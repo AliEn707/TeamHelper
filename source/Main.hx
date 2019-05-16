@@ -3,6 +3,7 @@ package;
 
 import haxe.ui.HaxeUIApp;
 import haxe.ui.Toolkit;
+import lime.ui.KeyCode;
 import openfl.Lib;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
@@ -21,7 +22,7 @@ class Main {
         StateManager.init(function() {			
 			Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, function(e:KeyboardEvent){
 //				trace(e);
-				if (e.keyCode == 27) {
+				if ([KeyCode.ESCAPE, KeyCode.APP_CONTROL_BACK].indexOf(e.keyCode)!=-1) {
 					e.preventDefault(); 
 					e.stopImmediatePropagation(); 
 					e.stopPropagation(); 
