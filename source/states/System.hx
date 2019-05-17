@@ -32,12 +32,11 @@ class System extends StateBase{
 		_comp = ComponentMacros.buildComponent("assets/ui/system.xml");
 		super();
 		////initialisation that not needed to reset on resume
-		//SoundManager.setupAudio([8000], [16], [1]);
+//		SoundManager.setupAudio([8000, 11025, 16000], [8, 16], [1, 2]);
 		//test to start audiorecord for filling audio settings
-		SoundManager.startRecording(function(b:Bytes){}, function(s:String){}, function(){ 
+		SoundManager.startRecording(function(b:Bytes){
 			SoundManager.stopRecording();
-		}, 700);
-		
+		}, function(s:String){trace(s);}, function(){}, 700);
 		test();
 	}
 	
@@ -54,31 +53,29 @@ class System extends StateBase{
 			if (!playing){
 				playing = true;
 				SoundManager.startRecording(function(b:Bytes){
-					//trace(b.length);
-					Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(b)).play();
+//					//trace(b.length);
+//					Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(b)).play();
+					NetworkManager.broadcastSound(b);
 				}, function(s:String){
 					trace(s);
 				}, function(){
 					trace("ok");
-				}, 700);
+				}, 1100);
 				cast(_comp.findComponent("sound"), Button).text = "stop";
 			}else{
 				playing = false;
 				SoundManager.stopRecording();
-				cast(_comp.findComponent("sound"), Button).text = "start playing";
+				cast(_comp.findComponent("sound"), Button).text = "sound";
 			}
 		}
 		cast(_comp.findComponent("connect"), Button).onClick = function(e:MouseEvent){
 			trace(cast(_comp.findComponent("host"), TextField).text);
-			(new TcpConnection()).connect(
+			NetworkManager.connect(
 				cast(_comp.findComponent("host"), TextField).text,
-				NetworkManager.port,
-				function(conn:TcpConnection){
+				function(i:Int){
 					trace("connected");
-					_conn = conn;
-					_conn.sendShort(0);//send first 2 bytes to show that we are not flash
 				},
-				function(e:Dynamic){
+				function(){
 					trace(e);
 				}
 			);
@@ -86,11 +83,10 @@ class System extends StateBase{
 		cast(_comp.findComponent("send"), Button).onClick = function(e:MouseEvent){
 			trace("pressed");
 			var p:Packet = new Packet();
+			p.type = MsgType.DEBUG;
 			p.addShort(NetworkManager.id);
-			p.addShort(MsgType.DEBUG);
 			p.addString(cast(_comp.findComponent("message"), TextField).text);
-			if (_conn !=null)
-				_conn.sendPacket(p);
+			NetworkManager.broadcastPacket(p, 0);
 		};
 	}
 	

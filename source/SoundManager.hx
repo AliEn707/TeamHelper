@@ -1,4 +1,5 @@
 package;
+import haxe.CallStack;
 import haxe.io.Bytes;
 import openfl.events.Event;
 import openfl.extension.Audiorecorder;
@@ -15,7 +16,10 @@ class SoundManager{
 	public static function addSound(s:Bytes, id:Int){
 		try{
 			_confs.get(id).addAndPlay(s);
-		}catch (e:Any){}
+		}catch (e:Any){
+			trace("cant play sound");
+			trace(CallStack.toString(CallStack.exceptionStack()));
+		}
 	}
 	
 	public static function addConfig(i:Int, samples:Int, bits:Int, channels:Int){
@@ -61,6 +65,7 @@ class SoundConfig{
 		RECORDER_SAMPLERATE = samples;
 		RECORDER_BITS = bits;
 		RECORDER_CHANNELS = channels;
+		trace("added "+samples+" "+bits+" "+channels);
 	}
 	
 	public function addAndPlay(s:Bytes){
@@ -69,7 +74,7 @@ class SoundConfig{
 			stack.add(s);
 		}else if (stack.length == 0){
 			playing = true;
-			s.play(0, 0).addEventListener(Event.SOUND_COMPLETE, onPlayed);
+			s.play().addEventListener(Event.SOUND_COMPLETE, onPlayed);
 		}else{//TODO: is it posible?
 			stack.add(s);
 		}
@@ -77,7 +82,7 @@ class SoundConfig{
 	
 	private function onPlayed(e:Event){
 		try{
-			stack.pop().play(0, 0).addEventListener(Event.SOUND_COMPLETE, onPlayed);		
+			stack.pop().play().addEventListener(Event.SOUND_COMPLETE, onPlayed);		
 		}catch(e:Any){
 			playing = false;
 		}//can't play

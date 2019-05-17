@@ -6,7 +6,7 @@
 		<button id="connect" width="50%" text="connect"/>
 	</hbox>
 	<hbox width="100%">
-		<textfield width="50%" text="localhost" />
+		<hprogress width="50%" height="100%" value="0.5" />
 		<button id="sound" width="50%" text="sound"/>
 	</hbox>
 	

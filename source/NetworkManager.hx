@@ -4,6 +4,8 @@ import haxe.Timer.delay;
 import haxe.crypto.Crc32;
 import haxe.crypto.Md5;
 import haxe.io.Bytes;
+import haxe.io.BytesInput;
+import haxe.io.BytesOutput;
 import haxe.network.Lock;
 import haxe.network.Packet;
 import haxe.network.TcpConnection;
@@ -36,7 +38,7 @@ class NetworkManager{
 				setId(conn);
 			}
 			var p:Packet = new Packet();
-				p.type=MsgType.CLIENTINFO;
+				p.type = MsgType.CLIENTINFO;
 				p.addShort(id);//sender id
 				p.addShort(id);//info id
 				p.addString(host);
@@ -87,8 +89,8 @@ class NetworkManager{
 				p.addShort(id);//info id
 				p.addString(host);
 				p.addInt(Audiorecorder.RECORDER_SAMPLERATE);
-				p.addInt(Audiorecorder.RECORDER_CHANNELS);
 				p.addInt(Audiorecorder.RECORDER_BITS);
+				p.addInt(Audiorecorder.RECORDER_CHANNELS);
 			//add other data
 			conn.sendPacket(p);
 		}, function(e:Dynamic){
@@ -96,6 +98,14 @@ class NetworkManager{
 				fail();
 		});
 	}	
+	
+	public static function broadcastSound(bytes:Bytes){
+		var p:Packet = new Packet();
+		p.type = MsgType.SOUND;
+		p.addShort(id);
+		p.addCompressGZIP(bytes);
+		broadcastPacket(p, 0);
+	}
 	
 	public static function broadcastPacket(p:Packet, except:Int){
 		var bytes = p.getBytes();
@@ -105,77 +115,90 @@ class NetworkManager{
 	public static function broadcastBytesSize(bytes:Bytes, length:Int, except:Int){
 		_lock.lock();
 			for (c in _channels){
-				if (c.over==null && except==c.id){
+				if (c.over==null && except!=c.id){
 					c.conn.sendUShort(length);
 					c.conn.sendBytes(bytes);
+//					trace("sended");
 				}
 			}
 		_lock.unlock();
 	}
 	
-	public static function proceedMessage(message:Bytes, from:Int){
+	public static function proceedMessage(message:Bytes, from:Client){
 		var p:Packet = Packet.fromBytes(message);
-		if (!p.chanks[0].isShort()){
-			trace("Wrong message!");
-			return;
-		}
 		var sender:Int = p.chanks[0].data;
-		if (getClient(sender)==null){
+		if (getClient(sender) == null){
 			var c:Client = new Client();
+			addClient(c);
 			c.id = sender;
-			c.over = from;
-			var clientfrom = getClient(from);
-			if (clientfrom != null){//if we get info about client where we got package
-				//get data from host
-				var p:Packet = new Packet();
-					p.type=MsgType.ASKCLIENTINFO;
-					p.addShort(id);
-					p.addShort(c.id);		
-				clientfrom.conn.sendPacket(p);
-			}
+			c.over = from.id;
+			//if we get info about client where we got package
+			var p:Packet = new Packet();
+				p.type=MsgType.ASKCLIENTINFO;
+				p.addShort(id);
+				p.addShort(c.id);		
+			from.conn.sendPacket(p);
 		}
+//		trace(p.type);
+//		trace(sender);
 		switch(p.type){
 			case MsgType.DEBUG:
 				trace("got "+p.chanks[1].data);
 			case MsgType.CLIENTINFO:
+				trace("git client info "+p.chanks[1].data+" "+p.chanks[2].data);
 				var client = getClient(p.chanks[1].data);
+				if (client == null){//TODO: check if needed
+					client = new Client();
+					addClient(client);
+					client.id = p.chanks[1].data;
+					client.over = from.id;
+				}
 				client.host = p.chanks[2].data;
 				SoundManager.addConfig(client.id, p.chanks[3].data, p.chanks[4].data, p.chanks[5].data);//TODO: add try catch
 			case MsgType.ASKCLIENTINFO:
-				var co:Null<Client> = getClient(p.chanks[1].data);
-				if (co != null){
-					var client = getClient(sender);
-					if (client.conn!=null){
-						var conf = SoundManager.getConfig(co.id);
-						if (conf != null){
-							var p:Packet = new Packet();
-								p.addShort(id);
-								p.addByte(MsgType.CLIENTINFO);
-								p.addShort(co.id);
-								p.addString(co.host);
-								p.addInt(conf.RECORDER_SAMPLERATE);
-								p.addInt(conf.RECORDER_CHANNELS);
-								p.addInt(conf.RECORDER_BITS);
-							client.conn.sendPacket(p);
+				if (p.chanks[1].data == id){
+					
+				}else{
+					var co:Null<Client> = getClient(p.chanks[1].data);
+					if (co != null){
+						var client = getClient(sender);
+						if (client.conn!=null){
+							var conf = SoundManager.getConfig(co.id);
+							if (conf != null){
+								var p:Packet = new Packet();
+									p.addShort(id);
+									p.addByte(MsgType.CLIENTINFO);
+									p.addShort(co.id);
+									p.addString(co.host);
+									p.addInt(conf.RECORDER_SAMPLERATE);
+									p.addInt(conf.RECORDER_CHANNELS);
+									p.addInt(conf.RECORDER_BITS);
+								client.conn.sendPacket(p);
+							}
 						}
+					}else if (_host!=null){//TODO: check if it needed
+						var p:Packet = new Packet();
+							p.type=MsgType.ASKCLIENTINFO;
+							p.addShort(id);
+							p.addShort(sender);		
+						_host.sendPacket(p);
 					}
-				}else if (_host!=null){//TODO: check if it needed
-					var p:Packet = new Packet();
-						p.type=MsgType.ASKCLIENTINFO;
-						p.addShort(id);
-						p.addShort(sender);		
-					_host.sendPacket(p);
 				}
 			case MsgType.SOUND:
+				trace("sound");
 				SoundManager.addSound(p.chanks[1].data, sender);
-				broadcastBytesSize(message, message.length, from);
+				broadcastBytesSize(message, message.length, from.id);
 		}
 	}
 	
 	private static function setId(conn:TcpConnection){
 		host=conn.sock.host().host.toString();
-		id=get16from32(Crc32.make(Bytes.ofString(host)));
-	}
+		id = Packet.get16from32(Crc32.make(Bytes.ofString(host)));
+/*		var c = new Client();
+		c.id = id;
+		c.host = host;
+		addClient(c);
+*/	}
 	
 	private static function addClient(c:Client){
 		_lock.lock();
@@ -211,13 +234,6 @@ class NetworkManager{
 			onFound(host);
 		}, onEnd);
 	}
-	
-	
-	public static function get16from32(i:Int):Int{
-		var b = Bytes.alloc(2);
-		b.setUInt16(0,i);
-		return b.getUInt16(0);
-	}
 }
 
 class Client{
@@ -229,15 +245,18 @@ class Client{
 	public function new(?c:TcpConnection){
 		conn = c;
 		if (conn != null){
+			trace(conn.sock.peer());
+			trace(conn.sock.host());
 			host = conn.sock.peer().host.toString();
-			id = NetworkManager.get16from32(Crc32.make(Bytes.ofString(host)));
+			id = Packet.get16from32(Crc32.make(Bytes.ofString(host)));
 			conn.recvUShort(getMessage);
+			trace("Client added "+id);
 		}
 	}
 	
 	private function getMessage(b:Int){
 		conn.recvBytes(function(bytes:Bytes){
-			NetworkManager.proceedMessage(bytes, id);
+			NetworkManager.proceedMessage(bytes, this);
 		}, b);
 		conn.recvUShort(getMessage);
 	}
