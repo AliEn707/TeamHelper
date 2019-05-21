@@ -43,8 +43,8 @@ class NetworkManager{
 				p.addShort(id);//info id
 				p.addString(host);
 				p.addInt(Audiorecorder.RECORDER_SAMPLERATE);
-				p.addInt(Audiorecorder.RECORDER_CHANNELS);
 				p.addInt(Audiorecorder.RECORDER_BITS);
+				p.addInt(Audiorecorder.RECORDER_CHANNELS);
 			//add other data
 			conn.sendPacket(p);
 
@@ -171,8 +171,8 @@ class NetworkManager{
 									p.addShort(co.id);
 									p.addString(co.host);
 									p.addInt(conf.RECORDER_SAMPLERATE);
-									p.addInt(conf.RECORDER_CHANNELS);
 									p.addInt(conf.RECORDER_BITS);
+									p.addInt(conf.RECORDER_CHANNELS);
 								client.conn.sendPacket(p);
 							}
 						}
