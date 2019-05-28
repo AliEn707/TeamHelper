@@ -143,9 +143,8 @@ class NetworkManager{
 //		trace(sender);
 		switch(p.type){
 			case MsgType.DEBUG:
-				trace("got "+p.chanks[1].data);
+				trace("got "+p.chanks[1].data+" from "+from.id+"("+from.host+")");
 			case MsgType.CLIENTINFO:
-				trace("git client info "+p.chanks[1].data+" "+p.chanks[2].data);
 				var client = getClient(p.chanks[1].data);
 				if (client == null){//TODO: check if needed
 					client = new Client();
@@ -155,6 +154,7 @@ class NetworkManager{
 				}
 				client.host = p.chanks[2].data;
 				SoundManager.addConfig(client.id, p.chanks[3].data, p.chanks[4].data, p.chanks[5].data);//TODO: add try catch
+				trace("git client info "+p.chanks[1].data+" "+p.chanks[2].data);
 			case MsgType.ASKCLIENTINFO:
 				if (p.chanks[1].data == id){
 					
@@ -185,9 +185,9 @@ class NetworkManager{
 					}
 				}
 			case MsgType.SOUND:
-				trace("sound");
 				SoundManager.addSound(p.chanks[1].data, sender);
 				broadcastBytesSize(message, message.length, from.id);
+				trace("sound");
 		}
 	}
 	
