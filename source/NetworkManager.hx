@@ -115,7 +115,7 @@ class NetworkManager{
 	public static function broadcastBytesSize(bytes:Bytes, length:Int, except:Int){
 		_lock.lock();
 			for (c in _channels){
-				if (c.over==null && except!=c.id){
+				if (c.over==null && except!=c.id && c.conn!=null){
 					c.conn.sendUShort(length);
 					c.conn.sendBytes(bytes);
 //					trace("sended");

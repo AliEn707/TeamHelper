@@ -7,8 +7,10 @@ import haxe.io.BytesInput;
 import haxe.network.TcpConnection;
 import haxe.network.Packet;
 import haxe.ui.HaxeUIApp;
+import haxe.ui.components.HProgress;
 import haxe.ui.components.Label;
 import haxe.ui.containers.dialogs.MessageDialog;
+import haxe.ui.core.UIEvent;
 import haxe.ui.macros.ComponentMacros;
 import haxe.ui.components.Button;
 import haxe.ui.components.TextArea;
@@ -61,11 +63,11 @@ class System extends StateBase{
 				}, function(){
 					trace("ok");
 				}, 1100);
-				cast(_comp.findComponent("sound"), Button).text = "stop";
+//				cast(_comp.findComponent("sound"), Button).text = "stop";
 			}else{
 				playing = false;
 				SoundManager.stopRecording();
-				cast(_comp.findComponent("sound"), Button).text = "sound";
+//				cast(_comp.findComponent("sound"), Button).text = "sound";
 			}
 		}
 		cast(_comp.findComponent("connect"), Button).onClick = function(e:MouseEvent){
@@ -82,11 +84,13 @@ class System extends StateBase{
 		};
 		cast(_comp.findComponent("send"), Button).onClick = function(e:MouseEvent){
 			trace("pressed");
-			var p:Packet = new Packet();
-			p.type = MsgType.DEBUG;
-			p.addShort(NetworkManager.id);
-			p.addString(cast(_comp.findComponent("message"), TextField).text);
-			NetworkManager.broadcastPacket(p, 0);
+			if (cast(_comp.findComponent("message"), TextField).text!=null){
+				var p:Packet = new Packet();
+				p.type = MsgType.DEBUG;
+				p.addShort(NetworkManager.id);
+				p.addString(cast(_comp.findComponent("message"), TextField).text);
+				NetworkManager.broadcastPacket(p, 0);
+			}
 		};
 	}
 	
