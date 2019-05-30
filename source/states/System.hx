@@ -92,6 +92,7 @@ class System extends StateBase{
 				NetworkManager.broadcastPacket(p, 0);
 			}
 		};
+		//NetworkManager.findInLocal(function(h:String){trace(h); }, function(arr:Array<Dynamic>){trace("done"); }, "172.16.1.");
 	}
 	
 	public function getIP(host:String){
