@@ -235,21 +235,18 @@ class NetworkManager{
 		}, onEnd);
 	}
 	
-	public static function findInLocal(callback:String->Void, onFinish:Array<Dynamic>->Void, ?base:String){
-		if (base == null)
-			base = "192.168.0.";
-		var arr:Array<Dynamic> = [for (i in (0...255)) {host:base+(i + 1), access:false}];
-		Thread_.create(function(){
-			var th:Thread_ = Thread_.current();
+	public static function findInLocal(callback:String->Void, onFinish:Array<Dynamic>->Void, arr:Array<Dynamic>){
+		Thread.create(function(){
+			var th:Thread = Thread.current();
 			for (a in arr)
-				Thread_.create(function(e:Dynamic){
+				Thread.create(function(e:Dynamic){
 					e.access = TcpConnection.isAvailable(e.host, port);
 					th.sendMessage(true);
 					if (e.access)
 						callback(e.host);
 				}.bind(a));
 			for (a in arr)
-				Thread_.readMessage(true);
+				Thread.readMessage(true);
 			onFinish(arr);
 		});
 	}
