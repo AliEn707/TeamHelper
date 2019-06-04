@@ -4,6 +4,7 @@ import haxe.Timer;
 import haxe.Timer.delay;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
+import haxe.io.BytesOutput;
 import haxe.network.TcpConnection;
 import haxe.network.Packet;
 import haxe.ui.HaxeUIApp;
@@ -29,6 +30,7 @@ class System extends StateBase{
 	
 	private var _conn:Null<TcpConnection>;
 	private var _gethosttimer:Timer;
+	private var _setLoudness:Null<Int->Void> = null;
 
 	public function new(){
 		_comp = ComponentMacros.buildComponent("assets/ui/system.xml");
@@ -38,7 +40,8 @@ class System extends StateBase{
 		//test to start audiorecord for filling audio settings
 		SoundManager.startRecording(function(b:Bytes){
 			SoundManager.stopRecording();
-		}, function(s:String){trace(s);}, function(){}, 700);
+		}, function(s:String){trace(s); }, function(){}, 700);
+		_setLoudness = function(v:Int){cast(_comp.findComponent("loudness"), HProgress).value = v; };
 		test();
 	}
 	
@@ -49,23 +52,25 @@ class System extends StateBase{
 		return instance;
 	}
 	
-	private var playing:Bool = false;
+	private var _playing:Bool = false;
 	private function test(){
-		cast(_comp.findComponent("sound"), Button).onClick = function(e:MouseEvent){
-			if (!playing){
-				playing = true;
+		cast(_comp.findComponent("ptt"), Button).onClick = function(e:MouseEvent){
+			if (!_playing){
+				_playing = true;
 				SoundManager.startRecording(function(b:Bytes){
 //					//trace(b.length);
 //					Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(b)).play();
 					NetworkManager.broadcastSound(b);
+					SoundManager.updateLoudness(_setLoudness, b);
 				}, function(s:String){
 					trace(s);
+					_setLoudness(0);
 				}, function(){
 					trace("ok");
 				}, 1100);
 //				cast(_comp.findComponent("sound"), Button).text = "stop";
 			}else{
-				playing = false;
+				_playing = false;
 				SoundManager.stopRecording();
 //				cast(_comp.findComponent("sound"), Button).text = "sound";
 			}
@@ -93,6 +98,7 @@ class System extends StateBase{
 			}
 		};
 		//NetworkManager.findInLocal(function(h:String){trace(h); }, function(arr:Array<Dynamic>){trace("done"); }, [for (i in (0...255)) {host:"192.168.0."+(i + 1), access:false}]);
+		//openfl.extension.Geolocation.startService(function(a:Dynamic){trace(a); }, 1.5, 10);
 	}
 	
 	public function getIP(host:String){

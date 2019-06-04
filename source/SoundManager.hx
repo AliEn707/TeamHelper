@@ -1,5 +1,6 @@
 package;
 import haxe.CallStack;
+import haxe.Timer.delay;
 import haxe.io.Bytes;
 import openfl.events.Event;
 import openfl.extension.Audiorecorder;
@@ -49,6 +50,45 @@ class SoundManager{
 		Audiorecorder.channels = c;
 		Audiorecorder.bits = b;
 		Audiorecorder.sampleRates = s;		
+	}
+	
+	public static function updateLoudness(cb:Int->Void, b:Bytes){
+		var bps = Audiorecorder.RECORDER_SAMPLERATE * Audiorecorder.RECORDER_CHANNELS * Audiorecorder.RECORDER_BITS / 8;
+		_updateLoudness(cb,b,0,cast(bps/5));
+	}
+	
+	private static function _updateLoudness(cb:Int->Void, b:Bytes, from:Int, size:Int){
+		var to:Int = from + size;
+		var coef:Float = 0;
+		if (to > b.length)
+			to = b.length;
+		var sum:Int = 0;
+		if (Audiorecorder.RECORDER_BITS==8){
+			var i = from;
+			while (i<to){
+				try{
+					var s:Int = b.get(i)-127;
+					sum += s * s;
+				}catch(e:Dynamic){}
+				i++;
+			}
+			coef = 100 / 127.0;
+			sum = cast (sum / i);
+		}else if (Audiorecorder.RECORDER_BITS==16){
+			var i = from;
+			while (i<to){
+				try{
+					var s:Int = b.getUInt16(i)-32767;
+					sum += s * s;
+				}catch(e:Dynamic){}
+				i+=2;
+			}
+			coef = 100 / 32767.0;
+			sum = cast (sum / (i / 2));
+		}
+		cb(Math.floor(Math.sqrt(sum) * coef));
+		if (to<b.length)
+			delay(_updateLoudness.bind(cb, b, to, size), 200);
 	}
 }
 
