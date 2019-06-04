@@ -14,11 +14,12 @@ class Main {
 	//elements that can be stay in memmory for long time
     public static function main() {
 		Settings.init();
-		//Toolkit.scale = 1.5;
-        //Toolkit.theme = "native";
+		//TODO: add lenguage depends on system settings (Settings.get("lang", openfl.system.Capabilities.language))
 		Toolkit.autoScale = true;
+		
 		//Toolkit.autoScaleDPIThreshold = 100;//168
 		//Toolkit.pixelsPerRem = 32;//16
+		Toolkit.styleSheet.addRules("*{font-size: "+11+"pt !important;}"); //TODO: set size depends on screen DPI and resolution (openfl.system.Capabilities .screenDPI .screenResolutionX .screenResolutionY)
         StateManager.init(function() {			
 			Lib.current.stage.addEventListener(KeyboardEvent.KEY_UP, function(e:KeyboardEvent){
 //				trace(e);
