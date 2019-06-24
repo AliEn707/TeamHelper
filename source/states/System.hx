@@ -9,6 +9,7 @@ import haxe.network.TcpConnection;
 import haxe.network.Packet;
 import haxe.ui.HaxeUIApp;
 import haxe.ui.components.HProgress;
+import haxe.ui.components.Image;
 import haxe.ui.components.Label;
 import haxe.ui.containers.dialogs.MessageDialog;
 import haxe.ui.core.UIEvent;
@@ -19,6 +20,8 @@ import haxe.ui.components.TextField;
 import haxe.ui.core.MouseEvent;
 import openfl.extension.Audiorecorder;
 import openfl.media.Sound;
+import util.ImageUtils;
+import util.TileSystem;
 
 import NetworkManager.MsgType;
 /**
@@ -54,6 +57,7 @@ class System extends StateBase{
 	
 	private var _playing:Bool = false;
 	private function test(){
+		
 		cast(_comp.findComponent("ptt"), Button).onClick = function(e:MouseEvent){
 			if (!_playing){
 				_playing = true;
@@ -98,7 +102,7 @@ class System extends StateBase{
 			}
 		};
 		//NetworkManager.findInLocal(function(h:String){trace(h); }, function(arr:Array<Dynamic>){trace("done"); }, [for (i in (0...255)) {host:"192.168.0."+(i + 1), access:false}]);
-		//openfl.extension.Geolocation.startService(function(a:Dynamic){trace(a); }, 1.5, 10);
+		//openfl.extension.Geolocation.startService(function(a:Dynamic){trace(a); },function(a:Bool){trace(a); } , 1.5, 10);
 	}
 	
 	public function getIP(host:String){

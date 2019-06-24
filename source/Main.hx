@@ -1,4 +1,5 @@
 package;
+import util.TileSystem;
 
 
 import haxe.ui.HaxeUIApp;
@@ -14,7 +15,7 @@ class Main {
 	//elements that can be stay in memmory for long time
     public static function main() {
 		Settings.init();
-		//TODO: add lenguage depends on system settings (Settings.get("lang", openfl.system.Capabilities.language))
+		//TODO: add language depends on system settings (Settings.get("lang", openfl.system.Capabilities.language))
 		Toolkit.autoScale = true;
 		
 		//Toolkit.autoScaleDPIThreshold = 100;//168
