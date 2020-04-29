@@ -124,6 +124,56 @@ class NetworkManager{
 		_lock.unlock();
 	}
 	
+	private static var _handlers:Map<Int,Null<Packet->Client->Void>> = [
+		MsgType.CLIENTINFO => function(p:Packet, from:Client){
+			var client = getClient(p.chanks[1].data);
+			if (client == null){//TODO: check if needed
+				client = new Client();
+				addClient(client);
+				client.id = p.chanks[1].data;
+				client.over = from.id;
+			}
+			client.host = p.chanks[2].data;
+			SoundManager.addConfig(client.id, p.chanks[3].data, p.chanks[4].data, p.chanks[5].data);//TODO: add try catch
+			trace("git client info " + p.chanks[1].data + " " + p.chanks[2].data);
+		},
+		MsgType.ASKCLIENTINFO => function(p:Packet, from:Client){
+			var sender:Int = p.chanks[0].data;
+			if (p.chanks[1].data == id){
+				
+			}else{
+				var co:Null<Client> = getClient(p.chanks[1].data);
+				if (co != null){
+					var client = getClient(sender);
+					if (client.conn!=null){
+						var conf = SoundManager.getConfig(co.id);
+						if (conf != null){
+							var p:Packet = new Packet();
+								p.addShort(id);
+								p.addByte(MsgType.CLIENTINFO);
+								p.addShort(co.id);
+								p.addString(co.host);
+								p.addInt(conf.RECORDER_SAMPLERATE);
+								p.addInt(conf.RECORDER_BITS);
+								p.addInt(conf.RECORDER_CHANNELS);
+							client.conn.sendPacket(p);
+						}
+					}
+				}else if (_host!=null){//TODO: check if it needed
+					var p:Packet = new Packet();
+						p.type=MsgType.ASKCLIENTINFO;
+						p.addShort(id);
+						p.addShort(sender);		
+					_host.sendPacket(p);
+				}
+			}
+		}
+	];
+	
+	public static function addMessageHandler(id:Int, h:Packet->Client->Void){
+		_handlers[id] = h;
+	}
+	
 	public static function proceedMessage(message:Bytes, from:Client){
 		var p:Packet = Packet.fromBytes(message);
 		var sender:Int = p.chanks[0].data;
@@ -141,53 +191,10 @@ class NetworkManager{
 		}
 //		trace(p.type);
 //		trace(sender);
-		switch(p.type){
-			case MsgType.DEBUG:
-				trace("got "+p.chanks[1].data+" from "+from.id+"("+from.host+")");
-			case MsgType.CLIENTINFO:
-				var client = getClient(p.chanks[1].data);
-				if (client == null){//TODO: check if needed
-					client = new Client();
-					addClient(client);
-					client.id = p.chanks[1].data;
-					client.over = from.id;
-				}
-				client.host = p.chanks[2].data;
-				SoundManager.addConfig(client.id, p.chanks[3].data, p.chanks[4].data, p.chanks[5].data);//TODO: add try catch
-				trace("git client info "+p.chanks[1].data+" "+p.chanks[2].data);
-			case MsgType.ASKCLIENTINFO:
-				if (p.chanks[1].data == id){
-					
-				}else{
-					var co:Null<Client> = getClient(p.chanks[1].data);
-					if (co != null){
-						var client = getClient(sender);
-						if (client.conn!=null){
-							var conf = SoundManager.getConfig(co.id);
-							if (conf != null){
-								var p:Packet = new Packet();
-									p.addShort(id);
-									p.addByte(MsgType.CLIENTINFO);
-									p.addShort(co.id);
-									p.addString(co.host);
-									p.addInt(conf.RECORDER_SAMPLERATE);
-									p.addInt(conf.RECORDER_BITS);
-									p.addInt(conf.RECORDER_CHANNELS);
-								client.conn.sendPacket(p);
-							}
-						}
-					}else if (_host!=null){//TODO: check if it needed
-						var p:Packet = new Packet();
-							p.type=MsgType.ASKCLIENTINFO;
-							p.addShort(id);
-							p.addShort(sender);		
-						_host.sendPacket(p);
-					}
-				}
-			case MsgType.SOUND:
-				SoundManager.addSound(p.chanks[1].data, sender);
-				broadcastBytesSize(message, message.length, from.id);
-				trace("sound");
+		try{
+			_handlers[p.type](p, from);
+		}catch(e:Dynamic){
+			trace(e);
 		}
 	}
 	
@@ -250,6 +257,7 @@ class NetworkManager{
 			onFinish(arr);
 		});
 	}
+	
 }
 
 class Client{

@@ -19,8 +19,8 @@ import haxe.ui.components.CheckBox;
 import haxe.ui.core.MouseEvent;
 import openfl.extension.Audiorecorder;
 import openfl.media.Sound;
-
 import NetworkManager.MsgType;
+import NetworkManager.Client;
 /**
  * ...
  * @author ...
@@ -39,8 +39,26 @@ class System extends StateBase{
 		//test to start audiorecord for filling audio settings
 		SoundManager.startRecording(function(b:Bytes){
 			SoundManager.stopRecording();
-		}, function(s:String){trace(s);}, function(){}, 700);
+		}, function(s:String){trace(s); }, function(){}, 700);
+		setupClientHandlers();
 		test();
+	}
+	
+	function setupClientHandlers(){
+		var handlers:Map<Int, Packet->Client->Void> = [
+			MsgType.DEBUG => function(p:Packet, from:Client){
+				trace("got " + p.chanks[1].data + " from " + from.id + "(" + from.host + ")"); 
+			},
+			MsgType.SOUND => function(p:Packet, from:Client){
+				var sender:Int = p.chanks[0].data;
+				SoundManager.addSound(p.chanks[1].data, sender);
+				NetworkManager.broadcastPacket(p, from.id);
+				trace("sound");
+			}
+		];
+		for (key in handlers.keys()){
+			NetworkManager.addMessageHandler(key, handlers[key]);
+		}
 	}
 	
 	public static function get():StateBase {
