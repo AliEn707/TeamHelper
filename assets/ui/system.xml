@@ -11,7 +11,10 @@
 			<hprogress id="loudness" width="100%" value="50" />
 		</hbox>
 		<textarea id="text" width="100%" height="100%"/>
-		<button id="sound" width="100%" text="PTT" toggle="true" />
+		<hbox width="100%">
+			<button id="sound" width="100%" text="PTT" toggle="true" />
+			<checkbox id="play_self"></checkbox>
+		</hbox>
 		<hbox width="100%">
 			<textfield id="message" width="90%" />
 			<button id="send" width="10%" text="Send"/>

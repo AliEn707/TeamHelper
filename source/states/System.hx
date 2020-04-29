@@ -15,6 +15,7 @@ import haxe.ui.macros.ComponentMacros;
 import haxe.ui.components.Button;
 import haxe.ui.components.TextArea;
 import haxe.ui.components.TextField;
+import haxe.ui.components.CheckBox;
 import haxe.ui.core.MouseEvent;
 import openfl.extension.Audiorecorder;
 import openfl.media.Sound;
@@ -56,7 +57,13 @@ class System extends StateBase{
 				playing = true;
 				SoundManager.startRecording(function(b:Bytes){
 //					//trace(b.length);
-//					Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(b)).play();
+					try{
+						if (cast(_comp.findComponent("play_self"), CheckBox).value == true){
+							Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(b)).play();//TODO: update
+						}
+					}catch(e:Dynamic){
+						trace(e);
+					}
 					NetworkManager.broadcastSound(b);
 				}, function(s:String){
 					trace(s);
