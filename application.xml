@@ -25,5 +25,12 @@
     <assets path="assets/styles" rename="styles" />
     <assets path="assets" />
 	
+    
+    <!--<ndll name="extension_audiorecorder" unless="android" />-->
+    
+    <dependency name="platform_utils" path="dependencies/platformUtils" if="android" />
+	<android extension="org.haxe.extension.PlatformUtils" />
+        
+    
 	<architecture name="x86" if="android" unless="debug" />
 </project>

@@ -21,6 +21,7 @@ import openfl.extension.Audiorecorder;
 import openfl.media.Sound;
 import NetworkManager.MsgType;
 import NetworkManager.Client;
+import platform.PlatformUtils;
 /**
  * ...
  * @author ...
@@ -30,6 +31,7 @@ class System extends StateBase{
 	
 	private var _conn:Null<TcpConnection>;
 	private var _gethosttimer:Timer;
+	private var _localip:Null<String>=null;
 
 	public function new(){
 		_comp = ComponentMacros.buildComponent("assets/ui/system.xml");
@@ -117,11 +119,31 @@ class System extends StateBase{
 				NetworkManager.broadcastPacket(p, 0);
 			}
 		};
-		//NetworkManager.findInLocal(function(h:String){trace(h); }, function(arr:Array<Dynamic>){trace("done"); }, [for (i in (0...255)) {host:"192.168.0."+(i + 1), access:false}]);
+		cast(_comp.findComponent("search"), Button).onClick = function(e:MouseEvent){
+			trace("pressed");
+			if (_localip != null){
+				NetworkManager.findInLocal(
+					function(h:String){
+						trace("found "+h); 
+					}, 
+					function(arr:Array<Dynamic>){
+						trace("searching done"); 
+						trace("found " + arr.filter(function(e:Dynamic){return e.access;}).length); 
+					}, 
+					function(hostbase:String):Array<Dynamic>{
+						var arr = [for (i in (0...255)) hostbase+(i + 1)];
+						arr.remove(_localip);
+						return [for (i in arr){host:i, access:false}]; 
+					}(_localip.split('.').slice(0, 3).join('.') + ".")
+				);
+			}
+		};
+		
 	}
 	
 	public function getIP(host:String){
 		if (["localhost","127.0.0.1"].indexOf(host)==-1){
+			_localip = host;
 			cast(_comp.findComponent("iplabel"), Label).text = "Local ip address is '" + host + "'";
 			_gethosttimer.stop();
 		}
@@ -141,7 +163,15 @@ class System extends StateBase{
 			});
 		}	
 		_gethosttimer = new Timer(3000);
-		_gethosttimer.run=TcpConnection.getMyHost.bind(getIP);		
+		_gethosttimer.run = function(){
+			var ip = PlatfromUtils.getLocalIp();
+			trace(ip);
+			if (ip=="")
+				TcpConnection.getMyHost(getIP);	
+			else
+				getIP(ip);
+				
+		};
 	}
 	
 	override
