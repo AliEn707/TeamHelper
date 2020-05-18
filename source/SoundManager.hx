@@ -54,37 +54,15 @@ class SoundManager{
 
 class SoundConfig{
 	public var id:Int;
-	public var stack:List<Sound> = new List<Sound>();
-	public var playing:Bool = false;
-	public var RECORDER_SAMPLERATE:Int = 0;
-	public var RECORDER_CHANNELS:Int = 0;
-	public var RECORDER_BITS:Int = 0;
+	public var stream:SoundStream;
 	
 	public function new(i:Int, samples:Int, bits:Int, channels:Int){
 		id = i;
-		RECORDER_SAMPLERATE = samples;
-		RECORDER_BITS = bits;
-		RECORDER_CHANNELS = channels;
+		stream = new SoundStream(samples, bits, channels);
 		trace("added "+samples+" "+bits+" "+channels);
 	}
 	
 	public function addAndPlay(s:Bytes){
-		var s:Sound = Sound.fromAudioBuffer(Audiorecorder.getAudioBuffer(s, RECORDER_SAMPLERATE, RECORDER_BITS, RECORDER_CHANNELS));
-		if (playing){
-			stack.add(s);
-		}else if (stack.length == 0){
-			playing = true;
-			s.play().addEventListener(Event.SOUND_COMPLETE, onPlayed);
-		}else{//TODO: is it posible?
-			stack.add(s);
-		}
-	}
-	
-	private function onPlayed(e:Event){
-		try{
-			stack.pop().play().addEventListener(Event.SOUND_COMPLETE, onPlayed);		
-		}catch(e:Any){
-			playing = false;
-		}//can't play
+		stream.add(s);
 	}
 }

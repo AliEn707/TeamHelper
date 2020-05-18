@@ -10,6 +10,13 @@ import java.net.InetAddress;
 import java.nio.ByteOrder; 
 import java.nio.ByteBuffer; 
 
+import java.util.HashMap;
+
+import android.media.AudioTrack;
+import android.media.AudioFormat;
+import android.media.MediaRecorder;
+import android.media.AudioManager;
+
 /* 
 	You can use the Android Extension class in order to hook
 	into the Android activity lifecycle. This is not required
@@ -50,5 +57,25 @@ ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(wm.getConnectionInf
                 return "";
             }
 	}
+	
+	static int streamId=1;
+	static HashMap streams=new HashMap();
+	public static int newAudioStream(int samples, int channels, int bytes){
+		int c = channels == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO;
+		int b = bytes == 1 ? AudioFormat.ENCODING_PCM_8BIT : AudioFormat.ENCODING_PCM_16BIT;
+		streams.put(++streamId, new AudioTrack(AudioManager.STREAM_MUSIC,
+			16000, 
+			c,
+			b, 
+			AudioTrack.getMinBufferSize(samples, c, b)*2, 
+			AudioTrack.MODE_STREAM));
+		((AudioTrack)streams.get(streamId)).play();
+	    return streamId;
+	}
+	
+	public static void addAudioStream(int id, byte[] data, int length){
+		((AudioTrack)streams.get(id)).write(data, 0, length);
+	}
+	
 	
 }

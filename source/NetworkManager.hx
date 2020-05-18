@@ -153,9 +153,9 @@ class NetworkManager{
 								p.addByte(MsgType.CLIENTINFO);
 								p.addShort(co.id);
 								p.addString(co.host);
-								p.addInt(conf.RECORDER_SAMPLERATE);
-								p.addInt(conf.RECORDER_BITS);
-								p.addInt(conf.RECORDER_CHANNELS);
+								p.addInt(conf.stream.RECORDER_SAMPLERATE);
+								p.addInt(conf.stream.RECORDER_BITS);
+								p.addInt(conf.stream.RECORDER_CHANNELS);
 							client.conn.sendPacket(p);
 						}
 					}
